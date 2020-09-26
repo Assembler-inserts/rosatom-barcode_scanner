@@ -1,3 +1,4 @@
+import array as arr
 
 from PIL import Image
 from pyzbar.pyzbar import decode
@@ -8,23 +9,39 @@ from time import sleep
 key = cv2. waitKey(1)
 webcam = cv2.VideoCapture(0)
 sleep(2)
-while True:
 
+barcodeRates = {}
+
+
+
+while True:
     try:
         check, frame = webcam.read()
-        #print(check) #prints true as long as the webcam is running
-        #print(frame) #prints matrix values of each framecd 
-        
         key = cv2.waitKey(1)
-        frame = imutils.resize(frame, width=400)
         barcodes = decode(frame);
-        if len(barcodes) >= 1:
-            print(barcodes[0].data);
-        else:
-            print("No bar");
+        # if len(barcodes) >= 1:
+            # print(barcodes[0].data);
+        # else:
+            # print("No bar");
         
         # loop over the detected barcodes
+        
+        # decrement common rate
+        for barcodeRate in barcodeRates:
+            if barcodeRates[barcodeRate] >= 1:
+                barcodeRates[barcodeRate] -= 1;      
+        
+        #print("Barcodes:[");
         for barcode in barcodes:
+            #change barcode rate
+            try:
+                if barcodeRates[barcode.data] < 100 :
+                    barcodeRates[barcode.data] += 2
+            except:
+                #print("ex")
+                barcodeRates[barcode.data] = 1
+            
+            #print(barcode.data);
             # extract the bounding box location of the barcode and draw
             # the bounding box surrounding the barcode on the image
             (x, y, w, h) = barcode.rect
@@ -37,37 +54,11 @@ while True:
             text = "{} ({})".format(barcodeData, barcodeType)
             cv2.putText(frame, text, (x, y - 10),
             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-            # # if the barcode text is currently not in our CSV file, write
-            # # the timestamp + barcode to disk and update the set
-            # if barcodeData not in found:
-                # csv.write("{},{}\n".format(datetime.datetime.now(),
-                    # barcodeData))
-                # csv.flush()
-                # found.add(barcodeData)
+        print(barcodeRates)
+        #print("]");
         cv2.imshow("Capturing", frame)
         
-        if key == ord('s'): 
-            print("S ok")
-            cv2.imwrite(filename='saved_img.jpg', img=frame)
-           
-            frame = imutils.resize(frame, width=400)
-            print(decode(frame).data)
-            sleep(1)
-            # webcam.release()
-            # print("Processing image...")
-            # img_ = cv2.imread('saved_img.jpg', cv2.IMREAD_ANYCOLOR)
-            # print("Converting RGB image to grayscale...")
-            # gray = cv2.cvtColor(img_, cv2.COLOR_BGR2GRAY)
-            # print("Converted RGB image to grayscale...")
-            # print("Resizing image to 28x28 scale...")
-            # img_ = cv2.resize(gray,(28,28))
-            # print("Resized...")
-            # img_resized = cv2.imwrite(filename='saved_img-final.jpg', img=img_)
-            # print("Image saved!")
-            
-            # break
-        
-        elif key == ord('q'):
+        if key == ord('q'): 
             webcam.release()
             cv2.destroyAllWindows()
             break
