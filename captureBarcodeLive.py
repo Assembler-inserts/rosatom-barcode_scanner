@@ -6,7 +6,7 @@ import imutils
 import cv2
 from time import sleep
 key = cv2. waitKey(1)
-webcam = cv2.VideoCapture(1)
+webcam = cv2.VideoCapture(0)
 sleep(2)
 while True:
 
@@ -14,7 +14,7 @@ while True:
         check, frame = webcam.read()
         #print(check) #prints true as long as the webcam is running
         #print(frame) #prints matrix values of each framecd 
-        cv2.imshow("Capturing", frame)
+        
         key = cv2.waitKey(1)
         frame = imutils.resize(frame, width=400)
         barcodes = decode(frame);
@@ -23,28 +23,28 @@ while True:
         else:
             print("No bar");
         
-        # # loop over the detected barcodes
-	# for barcode in barcodes:
-		# # extract the bounding box location of the barcode and draw
-		# # the bounding box surrounding the barcode on the image
-		# (x, y, w, h) = barcode.rect
-		# cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-		# # the barcode data is a bytes object so if we want to draw it
-		# # on our output image we need to convert it to a string first
-		# barcodeData = barcode.data.decode("utf-8")
-		# barcodeType = barcode.type
-		# # draw the barcode data and barcode type on the image
-		# text = "{} ({})".format(barcodeData, barcodeType)
-		# cv2.putText(frame, text, (x, y - 10),
-			# cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-		# # if the barcode text is currently not in our CSV file, write
-		# # the timestamp + barcode to disk and update the set
-		# if barcodeData not in found:
-			# csv.write("{},{}\n".format(datetime.datetime.now(),
-				# barcodeData))
-			# csv.flush()
-			# found.add(barcodeData)
-        
+        # loop over the detected barcodes
+        for barcode in barcodes:
+            # extract the bounding box location of the barcode and draw
+            # the bounding box surrounding the barcode on the image
+            (x, y, w, h) = barcode.rect
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            # the barcode data is a bytes object so if we want to draw it
+            # on our output image we need to convert it to a string first
+            barcodeData = barcode.data.decode("utf-8")
+            barcodeType = barcode.type
+            # draw the barcode data and barcode type on the image
+            text = "{} ({})".format(barcodeData, barcodeType)
+            cv2.putText(frame, text, (x, y - 10),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+            # # if the barcode text is currently not in our CSV file, write
+            # # the timestamp + barcode to disk and update the set
+            # if barcodeData not in found:
+                # csv.write("{},{}\n".format(datetime.datetime.now(),
+                    # barcodeData))
+                # csv.flush()
+                # found.add(barcodeData)
+        cv2.imshow("Capturing", frame)
         
         if key == ord('s'): 
             print("S ok")
