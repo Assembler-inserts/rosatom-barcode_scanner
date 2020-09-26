@@ -10,9 +10,19 @@ key = cv2. waitKey(1)
 webcam = cv2.VideoCapture(0)
 sleep(2)
 
+#detection threshold from 1 to 99
+detectionThreshold = 20;
+
 barcodeRates = {}
 
+onBoardContainer = "nooo";
 
+def onBoardContainerSet(container):
+    global onBoardContainer
+    if onBoardContainer != container:
+        onBoardContainer = container
+        print("Container:"+container)
+        
 
 while True:
     try:
@@ -54,7 +64,22 @@ while True:
             text = "{} ({})".format(barcodeData, barcodeType)
             cv2.putText(frame, text, (x, y - 10),
             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-        print(barcodeRates)
+        
+        if len(barcodeRates) > 0:
+            list_d = list(barcodeRates.items())
+            list_d.sort(key=lambda i: i[1])
+            if list_d[len(list_d)-1][1] > detectionThreshold:
+                #print(list_d[len(list_d)-1][0])
+                onBoardContainerSet(list_d[len(list_d)-1][0].decode("utf-8"))
+                
+            else:
+                #No container removed
+                onBoardContainerSet("No container")
+                
+                
+                #print("No container")
+            
+        #print(barcodeRates)
         #print("]");
         cv2.imshow("Capturing", frame)
         
