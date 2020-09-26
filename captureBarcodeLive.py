@@ -15,7 +15,7 @@ detectionThreshold = 20;
 
 barcodeRates = {}
 
-onBoardContainer = "nooo";
+onBoardContainer = "No";
 
 def onBoardContainerSet(container):
     global onBoardContainer
@@ -27,14 +27,9 @@ def onBoardContainerSet(container):
 while True:
     try:
         check, frame = webcam.read()
+        frame = cv2.flip(frame, 1)
         key = cv2.waitKey(1)
         barcodes = decode(frame);
-        # if len(barcodes) >= 1:
-            # print(barcodes[0].data);
-        # else:
-            # print("No bar");
-        
-        # loop over the detected barcodes
         
         # decrement common rate
         for barcodeRate in barcodeRates:
@@ -61,9 +56,15 @@ while True:
             barcodeData = barcode.data.decode("utf-8")
             barcodeType = barcode.type
             # draw the barcode data and barcode type on the image
-            text = "{} ({})".format(barcodeData, barcodeType)
-            cv2.putText(frame, text, (x, y - 10),
+            barcodeText = "{} ({})".format(barcodeData, barcodeType)
+            
+            
+            cv2.putText(frame, barcodeText, (x, y - 10),
             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+            
+        containerText = "Container: {}".format(onBoardContainer)
+        cv2.putText(frame, containerText, (10,30),
+        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
         
         if len(barcodeRates) > 0:
             list_d = list(barcodeRates.items())
@@ -74,7 +75,7 @@ while True:
                 
             else:
                 #No container removed
-                onBoardContainerSet("No container")
+                onBoardContainerSet("No")
                 
                 
                 #print("No container")
